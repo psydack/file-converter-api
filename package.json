@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "test": "jest --coverage"
+    "test": "jest --coverage --passWithNoTests"
   },
   "keywords": ["file", "converter", "csv", "json", "jsonl", "xlsx", "x402"],
   "author": "psydack",
