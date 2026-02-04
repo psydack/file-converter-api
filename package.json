@@ -1,0 +1,24 @@
+{
+  "name": "file-converter-api",
+  "version": "1.0.0",
+  "description": "Convert CSV/JSON/JSONL/XLSX files with x402 payments",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "jest --coverage"
+  },
+  "keywords": ["file", "converter", "csv", "json", "jsonl", "xlsx", "x402"],
+  "author": "psydack",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "multer": "^1.4.5-lts.1",
+    "csv-parse": "^5.5.6",
+    "csv-stringify": "^6.4.6"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4"
+  }
+}
