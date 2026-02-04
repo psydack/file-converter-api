@@ -104,6 +104,10 @@ app.get('/', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`\n📁 File Converter API running on port ${PORT}\n`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`File Converter API running on port ${PORT}`);
+  });
+}
+
+module.exports = app;

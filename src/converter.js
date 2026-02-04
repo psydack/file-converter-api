@@ -2,8 +2,8 @@
  * File converter utilities
  */
 
-const csvParse = require('csv-parse/lib/sync');
-const csvStringify = require('csv-stringify/lib/sync');
+const { parse: csvParse } = require('csv-parse/sync');
+const { stringify: csvStringify } = require('csv-stringify/sync');
 
 /**
  * Detect file format from content or extension
