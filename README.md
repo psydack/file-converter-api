@@ -11,7 +11,7 @@ Convert files between CSV, JSON, and JSONL formats with x402 micropayments.
 - ✅ **File Upload** - Multipart upload support
 - ✅ **Direct Content** - Send content in request body
 - ✅ **10MB Limit** - Handle reasonably large files
-- ✅ **x402 Payments** - $0.0005 USDC per conversion
+- ✅ **x402 Payments** - $0.00025 USDC per conversion
 
 ## 📋 Endpoints
 
@@ -42,7 +42,7 @@ curl -X POST http://localhost:3000/convert/upload \
 
 ## 💰 Payments
 
-- **Price**: $0.0005 USDC per conversion
+- **Price**: $0.00025 USDC per conversion
 - **Network**: Base (Chain ID 8453)
 - **Protocol**: x402 v2
 
