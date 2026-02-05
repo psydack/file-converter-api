@@ -2,6 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const multer = require('multer');
 const { convertFile, detectFormat } = require('./converter');
+const { paymentMiddleware } = require('@x402/express');
+const { x402ResourceServer, HTTPFacilitatorClient } = require('@x402/core/server');
+const { registerExactEvmScheme } = require('@x402/evm/exact/server');
 
 const app = express();
 app.use(express.json({ limit: '10mb' }));
@@ -10,6 +13,9 @@ app.use(express.text({ type: ['text/csv', 'application/json', 'application/jsonl
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 const WALLET_ADDRESS = process.env.WALLET_ADDRESS;
 const PORT = process.env.PORT || 3000;
+const FACILITATOR_URL = process.env.FACILITATOR_URL || 'https://x402.org/facilitator';
+const NETWORK = process.env.NETWORK || 'eip155:84532';
+const PRICE = '$0.00025';
 
 if (!WALLET_ADDRESS) {
   console.error('❌ ERROR: WALLET_ADDRESS environment variable is required');
@@ -17,23 +23,30 @@ if (!WALLET_ADDRESS) {
   process.exit(1);
 }
 
-// x402 middleware
-const requirePayment = (req, res, next) => {
-  if (req.headers['x-payment']) return next();
+const facilitatorClient = new HTTPFacilitatorClient({ url: FACILITATOR_URL });
+const x402Server = new x402ResourceServer(facilitatorClient);
+registerExactEvmScheme(x402Server);
 
-  res.status(402);
-  res.setHeader('PAYMENT-REQUIRED', Buffer.from(JSON.stringify({
-    x402Version: 2,
-    accepts: [{ scheme: 'exact', network: 'eip155:8453', amount: '250', payTo: WALLET_ADDRESS, asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913' }]
-  })).toString('base64'));
-  res.json({ message: 'Payment required', price: '$0.00025 USDC' });
+const x402Routes = {
+  'POST /convert': {
+    accepts: [{ scheme: 'exact', price: PRICE, network: NETWORK, payTo: WALLET_ADDRESS }],
+    description: 'Convert content between CSV, JSON, and JSONL',
+    mimeType: 'application/json'
+  },
+  'POST /convert/upload': {
+    accepts: [{ scheme: 'exact', price: PRICE, network: NETWORK, payTo: WALLET_ADDRESS }],
+    description: 'Convert uploaded file between formats',
+    mimeType: 'multipart/form-data'
+  }
 };
+
+app.use(paymentMiddleware(x402Routes, x402Server));
 
 /**
  * POST /convert
  * Convert file content between formats
  */
-app.post('/convert', requirePayment, (req, res) => {
+app.post('/convert', (req, res) => {
   const { content, from, to } = req.body;
 
   if (!content) {
@@ -62,7 +75,7 @@ app.post('/convert', requirePayment, (req, res) => {
  * POST /convert/upload
  * Convert uploaded file
  */
-app.post('/convert/upload', upload.single('file'), requirePayment, (req, res) => {
+app.post('/convert/upload', upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
