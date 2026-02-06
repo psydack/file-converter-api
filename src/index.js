@@ -12,7 +12,7 @@ app.use(express.text({ type: ['text/csv', 'application/json', 'application/jsonl
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 const WALLET_ADDRESS = process.env.WALLET_ADDRESS;
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.APP_PORT || process.env.PORT || 3000;
 const FACILITATOR_URL = process.env.FACILITATOR_URL || 'https://x402.org/facilitator';
 const NETWORK = process.env.NETWORK || 'eip155:84532';
 const PRICE = '$0.00025';
